@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIF Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1a1a1a; 
+            color: #f0f0f0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row; 
+            align-items: center;
+            justify-content: center;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px; 
+            width: 300px;
+            box-sizing: border-box;
+            background-color: #333; 
+            color: #f0f0f0;
+            border: 1px solid #444; 
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #555; 
+            color: #f0f0f0;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #777;
+        }
+
+        .image-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        canvas {
+            border: 1px solid #444;
+            background-color: transparent;
+        }
+
+        .link-container {
+            margin-top: 20px;
+        }
+
+        .download-link {
+            color: #f0f0f0;
+            text-decoration: none;
+        }
+
+        .spinner {
+            border: 4px solid #f0f0f0; 
+            border-top: 4px solid #333; 
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            display: none; 
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <input type="text" id="textInput" placeholder="Enter your text here" />
+        <button onclick="generate()">Generate</button>
+    </div>
+    <div class="spinner" id="loadingSpinner"></div>
+    <br>
+    <img src="static/default.gif" id="generatedImage" height="325px" width="480px">
+
+    <script>
+        function generate() {
+            const text = document.getElementById("textInput").value;
+            document.getElementById("loadingSpinner").style.display = "block";
+
+            const formData = new FormData();
+            formData.append("text", text);
+
+            fetch("/generate", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                const timestamp = new Date().getTime(); 
+                document.getElementById("generatedImage").src = "static/output.gif?" + timestamp;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            })
+            .finally(() => {
+                document.getElementById("loadingSpinner").style.display = "none";
+            });
+        }
+    </script>
+</body>
+</html>

@@ -13,7 +13,7 @@ def generate():
     subprocess.run(['python', 'generate.py', text])
     
     blender_command = [
-        r"C:\Program Files\Blender Foundation\Blender 4.3\blender.exe", 
+        r"/home/tar/blender-4.3.2-linux-x64/blender",
         "-b", 
         "--python", r"edit.py"
     ]

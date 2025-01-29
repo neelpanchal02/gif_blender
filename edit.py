@@ -4,7 +4,7 @@ import os
 blend_file_path = "static/blenderFile.blend"
 bpy.ops.wm.open_mainfile(filepath=blend_file_path)
 
-image_path ="C:/Users/Admin/Desktop/baby_gif/static/output.png"
+image_path ="/var/www/html/gif_blender/static/output.png"
 image_texture = bpy.data.images.load(image_path)
 
 material = bpy.data.materials.new(name="Material")
@@ -25,7 +25,7 @@ if obj.type == 'MESH':
     obj.data.materials.clear()
     obj.data.materials.append(material)
 
-output_dir = "C:/Users/Admin/Desktop/baby_gif/static/img/"
+output_dir = "/var/www/html/gif_blender/static/img"
 output_file_path = os.path.join(output_dir, "frame_####.png")
 
 bpy.context.scene.render.image_settings.file_format = 'PNG' 

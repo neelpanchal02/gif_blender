@@ -1,6 +1,7 @@
 import sys
 from PIL import Image, ImageDraw, ImageFont
 import textwrap
+import os
 
 def generate_image(text):
     width = 400
@@ -9,8 +10,13 @@ def generate_image(text):
     draw = ImageDraw.Draw(image)
 
     font_size = 50
+
+    # Get the relative path for the font
+    base_dir = os.path.dirname(os.path.abspath(__file__))  # Get the current script directory
+    font_path = os.path.join(base_dir, "static", "fonts", "arialbd.ttf")  # Construct the relative path
+
     try:
-        font = ImageFont.truetype("arialbd.ttf", font_size)
+        font = ImageFont.truetype(font_path, font_size)
     except IOError:
         font = ImageFont.load_default()
 
@@ -18,7 +24,7 @@ def generate_image(text):
     max_height = height - 10
 
     def fits_within_height(font_size):
-        font = ImageFont.truetype("arialbd.ttf", font_size)
+        font = ImageFont.truetype(font_path, font_size)
         wrapped_text = textwrap.fill(text, width=char_per_line(font_size))
         line_height = (font.getbbox("A")[3] - font.getbbox("A")[1]) * 1.2
         lines = wrapped_text.split('\n')
@@ -40,7 +46,7 @@ def generate_image(text):
         if font_size < 10:
             break
 
-    font = ImageFont.truetype("arialbd.ttf", font_size)
+    font = ImageFont.truetype(font_path, font_size)
     wrapped_text = textwrap.fill(text, width=char_per_line(font_size))
     line_height = (font.getbbox("A")[3] - font.getbbox("A")[1]) * 1.2
     lines = wrapped_text.split('\n')

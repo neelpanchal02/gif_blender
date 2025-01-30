@@ -60,23 +60,5 @@ output_file_path = os.path.join(output_dir, "frame_####.png")
 bpy.context.scene.render.image_settings.file_format = 'PNG'
 bpy.context.scene.render.filepath = output_file_path
 
-# Enable GPU rendering
-bpy.context.preferences.addons['cycles'].preferences.compute_device_type = 'CUDA'  # Change to 'OPTIX' or 'OPENCL' if needed
-bpy.context.scene.render.engine = 'CYCLES'
-
-# Enable all available GPUs
-for device in bpy.context.preferences.addons['cycles'].preferences.get_devices():
-    device.use = True
-
-# Set device to GPU
-bpy.context.scene.cycles.device = 'GPU'
-
-# Adjust sampling for better performance
-bpy.context.scene.cycles.samples = 128  # Increase for better quality, decrease for speed
-bpy.context.scene.cycles.use_adaptive_sampling = True  # Enable adaptive sampling for efficiency
-
-# Enable denoising (Optional, improves quality)
-bpy.context.scene.cycles.use_denoising = True
-
-# Render animation with GPU
+# Render animation
 bpy.ops.render.render(animation=True)

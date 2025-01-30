@@ -30,7 +30,7 @@ def generate(request):
         subprocess.run(["python", generate_script, text])
 
         # Ensure Blender executable path is correct
-        blender_path = r"C:\Program Files\Blender Foundation\Blender 4.3\blender.exe"
+        blender_path = r"/home/tar/blender-4.3.2-linux-x64/blender"
         if not os.path.exists(blender_path):
             return HttpResponse("Error: Blender executable not found", status=500)
 

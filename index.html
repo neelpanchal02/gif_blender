@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIF Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1a1a1a; 
+            color: #f0f0f0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row; 
+            align-items: center;
+            justify-content: center;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px; 
+            width: 300px;
+            box-sizing: border-box;
+            background-color: #333; 
+            color: #f0f0f0;
+            border: 1px solid #444; 
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #555; 
+            color: #f0f0f0;
+            border: none;
+            margin-left: 5px;
+        }
+
+        button:hover {
+            background-color: #777;
+        }
+
+        .image-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        canvas { 
+            display: block; 
+        }
+
+        .link-container {
+            margin-top: 20px;
+        }
+
+        .download-link {
+            color: #f0f0f0;
+            text-decoration: none;
+        }
+
+        .spinner {
+            border: 4px solid #f0f0f0; 
+            border-top: 4px solid #333; 
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            display: none; 
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+<body>
+    <div class="container">
+        <input type="text" id="textInput" placeholder="Enter your text here" />
+        <button onclick="edit()">Generate</button>
+        <button onclick="generate()">Download</button>
+    </div>
+    <div class="spinner" id="loadingSpinner"></div>
+    <br>
+
+    <script>
+        function downloadGIF() {
+            const fileName = "static/output.gif";
+            const link = document.createElement("a");
+            link.href = fileName;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        function generate() {
+            const text = document.getElementById("textInput").value;
+            document.getElementById("loadingSpinner").style.display = "block";
+
+            const formData = new FormData();
+            formData.append("text", text);
+
+            fetch("/generate", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                downloadGIF();
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            })
+            .finally(() => {
+                document.getElementById("loadingSpinner").style.display = "none";
+            });
+        }
+
+        function edit(){
+            const text = document.getElementById("textInput").value;
+            const formData = new FormData();
+            formData.append("text", text);
+
+            fetch("/edit", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                location.reload();
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            })
+        }
+
+        let scene, camera, renderer, loader, videoTexture, gltfScene, mixer;
+        const clock = new THREE.Clock();
+        const animationSpeedMultiplier = 1.05; 
+
+        scene = new THREE.Scene();
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(480, 270);
+        document.body.appendChild(renderer.domElement);
+
+        let video = document.createElement('video');
+        video.src = 'static/video.mp4';
+        video.loop = true;
+        video.muted = true;
+        videoTexture = new THREE.VideoTexture(video);
+        videoTexture.flipY = false;
+
+        loader = new THREE.GLTFLoader();
+        loader.load('static/scene.glb', function(gltf) {
+            gltfScene = gltf.scene;
+            scene.add(gltfScene);
+            mixer = new THREE.AnimationMixer(gltfScene);
+            gltf.animations.forEach((clip) => {
+                mixer.clipAction(clip).play();
+            });
+
+            const fileObject = gltfScene.getObjectByName('file');
+            const fileTexture = new THREE.TextureLoader().load('static/output.png');
+            fileTexture.flipY = false;
+            if (fileObject) {
+                fileObject.traverse(function(child) {
+                    if (child.isMesh) {
+                        child.material.map = fileTexture;
+                        child.material.emissive = new THREE.Color(1, 1, 1);
+                        child.material.emissiveMap = fileTexture.clone();
+                    }
+                });
+            }
+
+            const gltfCamera = gltfScene.getObjectByName('Camera');
+            if (gltfCamera) {
+                camera = gltfCamera;
+            }
+
+            const bgObject = gltfScene.getObjectByName('bg');
+            if (bgObject) {
+                bgObject.traverse(function(child) {
+                    if (child.isMesh) {
+                        child.material.map = videoTexture;
+                        child.material.emissive = new THREE.Color(1, 1, 1);
+                        child.material.emissiveMap = videoTexture.clone();
+                    }
+                });
+            }
+
+            video.load();
+            video.play();
+
+            let lastTime = 0;
+            function syncAnimation() {
+                requestAnimationFrame(syncAnimation);
+                const currentTime = video.currentTime;
+                let deltaTime = (currentTime - lastTime) * animationSpeedMultiplier; 
+                lastTime = currentTime;
+                if (mixer) mixer.update(deltaTime);
+                renderer.render(scene, camera);
+            }
+
+            video.onplay = function() {
+                lastTime = video.currentTime;
+                syncAnimation();
+            };
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = 480 / 270;
+            camera.updateProjectionMatrix();
+            renderer.setSize(480, 270);
+        });
+    </script>
+</body>
+</html>

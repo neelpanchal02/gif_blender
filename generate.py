@@ -5,6 +5,8 @@ import textwrap
 def generate_image(text):
     width = 400
     height = 80
+    text_color = (0, 0, 0)
+    text_opacity = 255 
     image = Image.new("RGBA", (width, height), (255, 255, 255, 0))  
     draw = ImageDraw.Draw(image)
 
@@ -18,7 +20,6 @@ def generate_image(text):
     max_height = height - 10
 
     def fits_within_height(font_size):
-        font = ImageFont.truetype("arialbd.ttf", font_size)
         wrapped_text = textwrap.fill(text, width=char_per_line(font_size))
         line_height = (font.getbbox("A")[3] - font.getbbox("A")[1]) * 1.2
         lines = wrapped_text.split('\n')
@@ -40,7 +41,6 @@ def generate_image(text):
         if font_size < 10:
             break
 
-    font = ImageFont.truetype("arialbd.ttf", font_size)
     wrapped_text = textwrap.fill(text, width=char_per_line(font_size))
     line_height = (font.getbbox("A")[3] - font.getbbox("A")[1]) * 1.2
     lines = wrapped_text.split('\n')
@@ -50,7 +50,7 @@ def generate_image(text):
     for i, line in enumerate(lines):
         text_width = font.getbbox(line)[2] - font.getbbox(line)[0]
         start_x = (width - text_width) / 2
-        draw.text((start_x, start_y + i * line_height), line, font=font, fill=(0, 0, 0))
+        draw.text((start_x, start_y + i * line_height), line, font=font, fill=text_color + (text_opacity,))
 
     image.save("static/output.png", "PNG")
 

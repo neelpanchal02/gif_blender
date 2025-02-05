@@ -175,14 +175,17 @@
             const fileTexture = new THREE.TextureLoader().load('static/output.png');
             fileTexture.flipY = false;
             if (fileObject) {
-                fileObject.traverse(function(child) {
-                    if (child.isMesh) {
-                        child.material.map = fileTexture;
-                        child.material.emissive = new THREE.Color(1, 1, 1);
-                        child.material.emissiveMap = fileTexture.clone();
-                    }
+        fileObject.traverse(function(child) {
+            if (child.isMesh) {
+                child.material = new THREE.MeshBasicMaterial({ 
+                    map: fileTexture, 
+                    transparent: true 
                 });
+                child.material.needsUpdate = true; 
             }
+        });
+    }
+
 
             const gltfCamera = gltfScene.getObjectByName('Camera');
             if (gltfCamera) {

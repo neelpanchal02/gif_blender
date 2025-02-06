@@ -148,7 +148,7 @@
 
         let scene, camera, renderer, loader, videoTexture, gltfScene, mixer;
         const clock = new THREE.Clock();
-        const animationSpeedMultiplier = 1.05; 
+        const animationSpeedMultiplier = 1.00; 
 
         scene = new THREE.Scene();
         renderer = new THREE.WebGLRenderer();
@@ -174,19 +174,14 @@
             const fileObject = gltfScene.getObjectByName('file');
             const fileTexture = new THREE.TextureLoader().load('static/output.png');
             fileTexture.flipY = false;
-            if (fileObject) {
+            
         fileObject.traverse(function(child) {
-            if (child.isMesh) {
-                child.material = new THREE.MeshBasicMaterial({ 
-                    map: fileTexture, 
-                    transparent: true 
-                });
-                child.material.needsUpdate = true; 
-            }
+            fileObject.material.map = fileTexture;
+            fileObject.material.transparent = true;
+            fileObject.material.needsUpdate = true;
+            
         });
-    }
-
-
+    
             const gltfCamera = gltfScene.getObjectByName('Camera');
             if (gltfCamera) {
                 camera = gltfCamera;
@@ -222,11 +217,6 @@
             };
         });
 
-        window.addEventListener('resize', () => {
-            camera.aspect = 480 / 270;
-            camera.updateProjectionMatrix();
-            renderer.setSize(480, 270);
-        });
     </script>
 </body>
 </html>

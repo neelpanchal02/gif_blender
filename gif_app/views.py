@@ -23,7 +23,7 @@ def generate_gif(request):
     generate_script = os.path.join(script_dir, "generate.py")
     gif_script = os.path.join(script_dir, "gif.py")
     edit_script = os.path.join(script_dir, "edit.py")
-    blender_path = r"C:\Program Files\Blender Foundation\Blender 4.3\blender.exe"
+    blender_path = r"/snap/bin/blender"
 
     # Ensure static/banner directory exists
     if not os.path.exists(STATIC_DIR):

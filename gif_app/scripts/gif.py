@@ -4,8 +4,8 @@ import imageio.v2 as imageio  # Fix deprecation warning
 # Define paths
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
-input_dir = os.path.join(project_root, "static", "img")
-output_gif = os.path.join(project_root, "static", "output.gif")
+input_dir = os.path.join(project_root, "static", "banner" ,"img")
+output_gif = os.path.join(project_root, "static","banner" , "output.gif")
 
 # Get frame files
 frames = sorted([os.path.join(input_dir, f) for f in os.listdir(input_dir) if f.endswith(".png")])

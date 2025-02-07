@@ -4,9 +4,9 @@ import os
 # Get absolute paths
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, "..", ".."))
-blend_file_path = os.path.join(project_root, "static", "blenderFile.blend")
-image_path = os.path.join(project_root, "static", "output.png")
-output_dir = os.path.join(project_root, "static", "img")
+blend_file_path = os.path.join(project_root, "static","banner" ,"blenderFile.blend")
+image_path = os.path.join(project_root, "static","banner" , "output.png")
+output_dir = os.path.join(project_root, "static","banner" , "img")
 
 # Ensure paths exist
 if not os.path.exists(image_path):

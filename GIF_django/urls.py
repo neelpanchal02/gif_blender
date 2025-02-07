@@ -16,10 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from gif_app.views import index, generate
+
+from gif_app.views import generate_gif, get_gifs
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("generate/", generate, name="generate"),
-    path("", index, name="index"),
+    path("generate-gif/", generate_gif, name="generate_gif"),
+    path("list-gifs/", get_gifs, name="list_gifs"),
 
 ]

@@ -13,7 +13,7 @@ def generate_image(text):
 
     # Get the relative path for the font
     base_dir = os.path.dirname(os.path.abspath(__file__))  # Get the current script directory
-    font_path = os.path.join(base_dir, "static", "fonts", "arialbd.ttf")  # Construct the relative path
+    font_path = os.path.join(base_dir, "static","banner", "fonts", "arialbd.ttf")  # Construct the relative path
     print(font_path)
     try:
         font = ImageFont.truetype(font_path, font_size)
@@ -58,7 +58,7 @@ def generate_image(text):
         start_x = (width - text_width) / 2
         draw.text((start_x, start_y + i * line_height), line, font=font, fill=(0, 0, 0))
 
-    image.save("static/output.png", "PNG")
+    image.save("static/banner/output.png", "PNG")
 
 
 if __name__ == "__main__":

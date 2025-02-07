@@ -60,5 +60,8 @@ def generate_gif(request):
 @permission_classes([AllowAny])
 def get_gifs(request):
     gifs = Gif.objects.all()
-    gif_urls = [os.path.join(STATIC_URL, gif.default_gif.url) for gif in gifs if gif.default_gif]
-    return JsonResponse({"data": gif_urls},status=200)
+    gif_data = [
+        {"id": gif.id, "path": os.path.join(STATIC_URL, gif.default_gif.url)}
+        for gif in gifs if gif.default_gif
+    ]
+    return JsonResponse({"data": gif_data}, status=200)
